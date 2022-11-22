@@ -1,44 +1,50 @@
+import java.util.Collections
+
 fun main() {
 
-    val list = listOf("1", "2", "3", "4")
+    /*****************
+    Prerequisite:
+    1. Class Hierarchy of JDK Collection APIs
+    2. Extension Function in Kotlin
+    3. Iterable Interface
+     *****************/
+
+
+    val list = mutableListOf("1", "2", "3", "4")
 //    val list = listOf(1,2,3,4)
-    val map = list.map { it.toInt() }
+    println("Kotlin : " + list.map { it.toInt() })
+    println("Our    : " + list.ourMap { it.toInt() })
 
+    val mapTo = ArrayList<Int>()
+    list.mapTo(mapTo) { it.toInt() }
+    println("Kotlin : " + mapTo)
 
-    val transform: (String) -> Int = { it.toInt() }
-    val convertStringToInt = list.ourMap(transform)
-    println(convertStringToInt)
-    val convertStringToInt2 = list.ourMap { it.toInt() + 10 }
-    println(convertStringToInt2)
+    val ourMapTo = ArrayList<Int>()
+    list.ourMapTo(ourMapTo) { it.toInt() }
+    println("Our    : " + ourMapTo)
 
-    val listOfFloat = listOf<Float>(1.0f)
-    val ourMap = listOfFloat.ourMap { it.toString() + "abc"}
-    println(ourMap)
+    val data = listOf("a", "b", "c")
+    data.ourMapTo(list) { it + " post" }
+    println(list)
 
-    val set = setOf<String>("1", "2", "3", "4")
-    set.map {  }
+    val newData = data.ourMap { it + " post" }
+    list.addAll(newData)
+    println(list)
 
-//    set.ourMap
-    val lib = Library()
-    lib.ourMap {  }
 }
 
 inline fun <T, R> Iterable<T>.ourMap(transform: (T) -> R): List<R> {
-    val size = if(this is Collection) this.size else 10
-    val destination = ArrayList<R>(size)
-    for (s in this) {
-        destination.add(transform(s))
+    val size = if (this is Collection) this.size else 10
+    return ourMapTo(ArrayList<R>(size), transform)
+}
+
+inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.ourMapTo(destination: C, transform: (T) -> R): C {
+    for (item in this) {
+        destination.add(transform(item))
     }
     return destination
 }
 
-
-class Library : Iterable<Int>{
-    override fun iterator(): Iterator<Int> {
-        TODO("Not yet implemented")
-    }
-
-}
 
 
 
